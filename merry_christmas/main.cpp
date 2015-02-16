@@ -7,6 +7,7 @@ DigitalOut led1(LED2);
 DigitalOut led2(LED3);
 DigitalOut led3(LED4);
 C12832 lcd(p5,p7,p6,p8,p11);
+BusOut colorled(p23,p24,p25);
 Ticker ticker;
 
 static int BRIGHTNESSPATTERN[] = {0,4,3,4,2,4,3,4,1,4,3,4,2,4,3,4};
@@ -35,8 +36,19 @@ void ledManager(){
         count=0;
     }
 }
+void colorled_thread(void const* args){
+   colorled=0;
+    while (true) {
+        colorled=colorled+1;
+        if(colorled==8){
+            colorled=0;
+        }
+        Thread::wait(500);
+    }
+}
 
 int main() {
+	Thread thread(colorled_thread);
     ticker.attach_us(ledManager,1000);
     int count=0;
     while(true){
